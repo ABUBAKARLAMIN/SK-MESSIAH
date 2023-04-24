@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Page Title</title>
+        <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
+        
+        <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+        
+    </style>
+    </head>
+    <body>
+        <header>
+            <div>ChatGPT - You</div>
+            <div id="new">
+                <span onclick="clearchat()">New</span>
+            </div>
+        </header>
+        <div id="chat">
+            <div id="mess">
+            
+            
+            </div>
+        </div>
+        
+        <div id="tc">
+            <input placeholder="Message" id="umess">
+            <button onclick="gpt()">
+                
+            <li class="fa fa-paper-plane"></li>
+                
+            </button>
+        </div>
+        
+        
+        <div id="blur">
+            <div id="alert">
+                <h1>¡Hi Sololearner!</h1>
+                <p>We need the Api key that you can get on the <a href="https://discord.pawan.krd">Discord</a> server for free</p>
+                <p>There go to the <b>#Bot</b> channel and use the <b>/key</b> command.</p>
+                <input placeholder="API key" id="key">
+                <button onclick="setkey()">
+                    <li class="fa fa-key"></li>
+                </button>
+            </div>
+        </div>
+        
+
+        <script>
+            var chat = document.getElementById("mess")
+            function write(mess, type)
+            {
+                if(type=="user")
+                {
+                    chat.innerHTML+= `<div class="mess hu">
+                <div> 
+                   <li class="fa fa-user"></li> 
+                </div>
+                <div class="text">
+                    `+mess+`
+                </div>
+            </div>`
+                }
+                if(type=="bot")
+                {
+                    chat.innerHTML+= `<div class="mess ai">
+                <div> 
+                   <li class="fa fa-robot"></li> 
+                </div>
+                <div class="text">
+                    `+mess+`
+                </div>
+            </div>`
+                }
+            }
+            
+            
+            function clearchat()
+            {
+                chats=[]
+                chat.innerHTML = ""
+            }
+            
+            
+            
+            
+            var ApiKey=""
+            
+            
+            function setkey()
+            {
+                ApiKey = document.getElementById("key").value
+                if(ApiKey != "" && ApiKey != " ")
+                {
+                var blur = document.getElementById("blur")
+                blur.style.display="none"
+                }
+            }
+            var chats=[]
+            function gpt()
+            {
+                var mess= document.getElementById("umess").value
+                
+                
+                if(mess != " " && mess != "")
+                {
+                    write(mess,"user")
+                      chats.push({role:"user",content:mess})
+                      
+                       document.getElementById("umess").disabled=true 
+                   
+  document.getElementById("umess").placeholder="Writing..."            
+     document.getElementById("umess").value=""
+  
+                    fetch("https://api.pawan.krd/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization:
+        "Bearer "+ApiKey,
+      "Content-Type": "application/json",
+    },
+    //Body
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: chats,
+      max_tokens: 500,
+      temperature: 0.9,
+    }),
+  }).then(res=>res.json()).then(data=>{
+      //console.log(data)
+      //console.log(data.choices[0].message.content)
+     try{
+     var converter = new showdown.Converter();
+var md = data.choices[0].message.content;
+var html = converter.makeHtml(md); write(html,"bot")
+      document.getElementById("umess").disabled=false
+                   
+ chats.push({role:"assistant",content:md})
+  document.getElementById("umess").placeholder="Message"  
+       } catch(e) {
+      write(data.error+". "+data.hint+".","bot")
+  }
+  })
+ 
+ }
+}
+            
+           
+            
+
+        </script>
+        <STYle>*
+            {
+                font-family:Nunito;
+                outline:none;
+            }
+            body {
+                margin:0;
+            }
+            .fa-user
+            {
+                width:30px;
+                height:30px;
+                background:rgb(120,72,230);
+                color:white;
+                border-radius:5px;
+                text-align:center;
+                line-height:30px;
+            }
+            .fa-robot
+            {
+                width:30px;
+                height:30px;
+                background:rgb(53,170,92);
+                color:white;
+                border-radius:5px;
+                text-align:center;
+                line-height:30px;
+                position:relative;
+                top:17px;
+            }
+            header{
+                background:rgb(50,50,60);
+                height:10vh;
+                line-height:10vh;
+                color:rgb(200,210,230);
+                display:flex;
+            }
+            header > div
+            {
+                width:100%;
+                margin-left:15px;
+                margin-right:15px;
+            }
+            header> #new
+            {
+                text-align:right;
+            }
+            header> #new> span
+            {
+                background:rgb(120,72,230);
+                padding:5px;
+                border-radius:5pc;
+                color:white;
+                padding-left:10px;
+                padding-right:10px;
+            }
+            #chat
+            {
+                height:73.5vh;
+                overflow-y:scroll;
+            }
+            .mess
+            {
+                display:flex;
+                min-height:7.5vh;
+            }
+            .mess>div
+            {
+                margin:5px;
+            }
+            .hu
+            {
+                padding:30px;
+            }
+            .ai
+            {
+                background:rgb(250,250,250);
+                padding:30px;
+                border-top: 1.5px solid #eee;
+                border-bottom: 1.5px solid #eee;
+            }
+            #tc
+            {
+                width:calc(100vw - 10px);
+                left:0;
+                height:100px;
+                background:#f0f0f0;
+                line-height:100px;
+                padding-left:10px;
+                border-radius:20px 20px 0px 0px;
+            }
+            input
+            {
+                padding:15px;
+                width:250px;
+                background:white;
+                border:2px solid rgb(230,230,230);
+                outline:none;
+                border-radius:15px;
+                outline:none;
+            }
+            button{
+                width:45px;
+                height:45px;
+                border-radius:15px;
+                background:rgb(120,72,230);
+                color:white;
+                border:none;
+            }
+            
+            #blur
+            {
+                position:fixed;
+                left:0px;
+                top:0px;
+                width:100vw;
+                height:100vh;
+                background:transparent;
+                backdrop-filter:blur(15px);
+                z-index:100;
+            }
+            #alert
+            {
+                position:fixed;
+                background:white;
+                padding:20px;
+                border-radius:10px;
+                top:50%;
+                transform:translate(0px,-50%);
+                margin:10px;
+                box-shadow:0px 0px 15px rgba(0,0,0,0.2);
+            }
+            
+            #alert > input
+            {
+                width:70%;
+            }
+            a
+            {
+                background-color:rgb(120,72,230);
+            }
+            h1
+            {
+                text-align:center;
+            }
+            b
+            {
+                background:#f3f3f3;
+                padding:2.5px;
+                border-radius:5px;
+            }</STYle>
+    </body>
+</html>
